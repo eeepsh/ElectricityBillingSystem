@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/tx 
+               http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/mvc
+              http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       xmlns:mvc="http://www.springframework.org/schema/mvc">
+
+    
+    <bean id="dataSource" 
+          class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/electricitybillingsystem?zeroDateTimeBehavior=convertToNull" />
+        <property name="username" value="root"/>
+        <property name="password" value="deepa"/>
+    </bean>
+    
+    
+    <bean id="sessionFactory" 
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+              <property name="dataSource" ref="dataSource" />
+              <property name="packagesToScan">
+                    <list>
+                           <value>com.itn.entity</value>
+                    </list>
+              </property>
+              <property name="hibernateProperties">
+                     <props>
+                           <prop key="hibernate.hbm2ddl.auto">update</prop>
+                           <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                           <prop key="hibernate.show_sql">false</prop>
+                     </props>
+              </property>
+        </bean>
+        <tx:annotation-driven transaction-manager="transactionManager"  />
+        
+        <bean id="transactionManager" 
+              class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+        
+      
+    <bean id="employeeDao" class="com.itn.dao.EmployeeDao">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>        
+        
+    <bean id="employeeService" class="com.itn.service.EmployeeService">
+        <property name="edao" ref="employeeDao"/>
+    </bean>
+       
+        <bean id="adminDao" class="com.itn.dao.AdminDao">
+            <property name="sessionFactory" ref="sessionFactory"/>
+        </bean>
+        
+        <bean id="adminService" class="com.itn.service.AdminService">
+            <property name="adao" ref="adminDao"/>
+        </bean>
+    
+        <bean id="customerDataDao" class="com.itn.dao.CustomerDataDao">
+            <property name="sessionFactory" ref="sessionFactory"/>
+        </bean>
+        <bean id="customerDataService" class="com.itn.service.CustomerDataService">
+            <property name="cddao" ref="customerDataDao"/>
+        </bean>
+        
+        <bean id="billDataDao" class="com.itn.dao.BillDao">
+            <property name="sessionFactory" ref="sessionFactory"/>
+        </bean>
+        
+        <bean id="billDataService" class="com.itn.service.BillService">
+            <property name="bdao" ref="billDataDao"/>
+        </bean>
+</beans>
